@@ -8,14 +8,23 @@ import javax.swing.JOptionPane;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
-import java.util.HashSet;
 import javax.swing.table.DefaultTableModel; 
 
 public class Docente extends Persona{
     
     private String codigo_docente, fecha_ingreso_laborar, fecha_ingreso_registro;
     private double salario;
+    private int id;
     Conexion cn;
+
+    public Docente(String codigo_docente, String fecha_ingreso_laborar, String fecha_ingreso_registro, double salario, int id, String nit, String nombres, String apellidos, String direccion, String telefono, String fecha_nacimiento) {
+        super(nit, nombres, apellidos, direccion, telefono, fecha_nacimiento);
+        this.codigo_docente = codigo_docente;
+        this.fecha_ingreso_laborar = fecha_ingreso_laborar;
+        this.fecha_ingreso_registro = fecha_ingreso_registro;
+        this.salario = salario;
+        this.id = id;
+    }
     
 
     public Docente(){}
@@ -58,6 +67,17 @@ public class Docente extends Persona{
     public void setSalario(double salario) {
         this.salario = salario;
     }
+    
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    
+    
     
     public DefaultTableModel leer(){
         DefaultTableModel tabla = new DefaultTableModel(); 
@@ -125,5 +145,61 @@ public class Docente extends Persona{
         }
     }
 
+    @Override
+    public void actualizar(){
+        try{
+            PreparedStatement parametro;
+            String query = "UPDATE docente SET nit = ?, nombres = ?, apellidos = ?, direccion = ?, telefono = ?, fecha_nacimiento = ?, codigo_docente = ?, salario = ?, fecha_ingreso_laborar = ?, fecha_ingreso_registro = ?" + 
+                    "WHERE id_docente = ?"; 
+            cn = new Conexion();
+            cn.abrir_conexion();
+            
+             
+            parametro = (PreparedStatement) cn.conexionBD.prepareStatement(query);
+            parametro.setString(1, this.getNit());
+            parametro.setString(2, this.getNombres());
+            parametro.setString(3, this.getApellidos());
+            parametro.setString(4, this.getDireccion());
+            parametro.setString(5, this.getTelefono());
+            parametro.setString(6, this.getFecha_nacimiento());
+            parametro.setString(7, this.getCodigo_docente());
+            parametro.setDouble(8, this.getSalario());
+            parametro.setString(9, this.getFecha_ingreso_laborar());
+            parametro.setString(10, this.getFecha_ingreso_registro());
+            parametro.setInt(11, this.getId());
+            
+            int ejecutar = parametro.executeUpdate();
+            cn.cerrar_conexion();   
+            JOptionPane.showMessageDialog(null, Integer.toString(ejecutar) + " Registro actualizado", "Actualizar", JOptionPane.INFORMATION_MESSAGE);
+
+            
+        }catch(Exception ex){
+            System.out.println("Error" + ex.getMessage());
+        }
+    }
     
+    
+    @Override
+    public void eliminar(){
+        try{
+            PreparedStatement parametro;
+            String query = "DELETE FROM docente WHERE id_docente = ?;"; 
+            cn = new Conexion();
+            cn.abrir_conexion();
+            
+             
+            parametro = (PreparedStatement) cn.conexionBD.prepareStatement(query);
+            parametro.setInt(1, this.getId());
+
+            int ejecutar = parametro.executeUpdate();
+            cn.cerrar_conexion();   
+            JOptionPane.showMessageDialog(null, Integer.toString(ejecutar) + " Registro Eliminado", "Eliminar", JOptionPane.INFORMATION_MESSAGE);
+
+            
+        }catch(Exception ex){
+            System.out.println("Error" + ex.getMessage());
+        }
+    }
+
+
 }
